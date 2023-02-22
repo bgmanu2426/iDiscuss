@@ -18,7 +18,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             $_SESSION['username'] = $row['username'];
             echo "logged in". $email;
         } 
-        header("Location: /index.php");  
+        header("Location: ../index.php");  
     }
-    header("Location: /index.php");  
+    header("Location: ../index.php");  
 }

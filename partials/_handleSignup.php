@@ -20,13 +20,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $result = mysqli_query($connection, $sql);
             if ($result) {
                 $showAlert = "You can now login using your credentials";
-                header("Location: /index.php?signupsuccess=true&signupmssg=$showAlert");
+                header("Location: /idiscuss/index.php?signupsuccess=true&signupmssg=$showAlert");
                 exit();
             }
         } else {
             $showError = "Passwords do not match";
         }
     }
-    header("Location: /index.php?signupsuccess=false&signupmssg=$showError");
+    header("Location: /idiscuss/index.php?signupsuccess=false&signupmssg=$showError");
 }
 include '_footer.php';

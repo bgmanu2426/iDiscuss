@@ -14,17 +14,15 @@
 <body>
     <?php include 'partials/_dbconnect.php'; ?>
     <?php include 'partials/_header.php'; ?>
-    <?php
-    if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
-        $username = $_SESSION['username']; // username to print in forum to avoid error in line number 64 and 105
-    }
 
+    <?php
     $id = $_GET['threadid'];
     $sql = "SELECT * FROM `threads` WHERE thread_id=$id";
     $result = mysqli_query($connection, $sql);
     while ($row = mysqli_fetch_assoc($result)) {
         $title = $row['thread_title'];
         $desc = $row['thread_desc'];
+        $thread_posted_by = $row['thread_posted_by'];
     }
     ?>
 
@@ -35,9 +33,10 @@
         if ($method == 'POST') {
             //Insert into comment db
             $comment = $_POST['comment'];
+            $commentpostedby = $_POST['commentpostedby'];
             $comment = str_replace("<", "&lt;", $comment);
             $comment = str_replace(">", "&gt;", $comment);
-            $sql = "INSERT INTO `comments` ( `comment_content`, `thread_id`, `comment_time`) VALUES ('$comment', '$id',  current_timestamp())";
+            $sql = "INSERT INTO `comments` ( `comment_content`, `thread_id`, `comment_posted_by`, `comment_time`) VALUES ('$comment', '$id', '$commentpostedby', current_timestamp())";
             $result = mysqli_query($connection, $sql);
             $showAlert = true;
             if ($showAlert) {
@@ -59,7 +58,7 @@
             <p class="lead"> <?php echo $desc; ?></p>
             <hr class="my-4">
             <p>This is a peer to peer forum. No Spam / Advertising / Self-promote in the forums is not allowed. Do not post copyright-infringing material. Do not post “offensive” posts, links or images. Do not cross post questions. Remain respectful of other members at all times.</p>
-            <p><b>Posted by: <em><?php echo $username; ?></b></em></p>
+            <p><b>Posted by: <em><?php echo $thread_posted_by; ?></b></em></p>
         </div>
     </div>
 
@@ -68,6 +67,7 @@
         echo '<div class="container">
         <h1 class="py-2">Post a Comment</h1> 
         <form action= "' . $_SERVER['REQUEST_URI'] . '" method="post"> 
+                <input type="hidden" name="commentpostedby" value ="' . $_SESSION['username'] . '">
             <div class="form-group">
                 <label for="exampleFormControlTextarea1">Type your comment</label>
                 <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
@@ -96,6 +96,7 @@
             $noResult = false;
             $id = $row['comment_id'];
             $content = $row['comment_content'];
+            $commentpostedby = $row['comment_posted_by'];
             $comment_time = $row['comment_time'];
             $time = new DateTime("$comment_time");
             $time->format('jS \of F Y h:i:s A');
@@ -103,7 +104,7 @@
             echo '<div class="media my-3">
             <img src="img/userdefault.png" width="54px" class="mr-3" alt="...">
             <div class="media-body">
-               <p class="font-weight-bold my-0"> Commented by:- <em>' . $username . ' (' . $time->format('jS F \, Y \a\t h:i A') . '</em>)</p> ' . $content . '
+               <p class="font-weight-bold my-0"> Commented by:- <em>' . $commentpostedby . ' (' . $time->format('jS F \, Y \a\t h:i A') . '</em>)</p> ' . $content . '
             </div>
         </div>';
         }

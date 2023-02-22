@@ -14,11 +14,8 @@
 <body>
     <?php include 'partials/_dbconnect.php'; ?>
     <?php include 'partials/_header.php'; ?>
+    
     <?php
-    if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
-        $username = $_SESSION['username']; // username to print in forum to avoid error in line number 117
-    }
-
     $id = $_GET['catid'];
     $sql = "SELECT * FROM `categories` WHERE category_id=$id";
     $result = mysqli_query($connection, $sql);
@@ -36,11 +33,12 @@
             // Insert into thread db
             $th_title = $_POST['title'];
             $th_desc = $_POST['desc'];
+            $th_postedby = $_POST['username'];
             $th_title = str_replace("<", "&lt;", $th_title);
             $th_title = str_replace(">", "&gt;", $th_title);
             $th_desc = str_replace("<", "&lt;", $th_desc);
             $th_desc = str_replace(">", "&gt;", $th_desc);
-            $sql = "INSERT INTO `threads` (`thread_title`, `thread_desc`, `thread_cat_id`, `thread_time`) VALUES ( '$th_title', '$th_desc', '$id', current_timestamp())";
+            $sql = "INSERT INTO `threads` (`thread_title`, `thread_desc`, `thread_cat_id`, `thread_posted_by`, `thread_time`) VALUES ( '$th_title', '$th_desc', '$id', '$th_postedby', current_timestamp())";
             $result = mysqli_query($connection, $sql);
             $showAlert = true;
             if ($showAlert) {
@@ -76,10 +74,13 @@
             <h1 class="py-2">Start a Discussion</h1> 
             <form action="' . $_SERVER["REQUEST_URI"] . '" method="post">
                 <div class="form-group">
+                    <input type="hidden" name="username" value ="' . $_SESSION['username'] . '">
+                </div>
+                <div class="form-group">
                     <label for="title">Problem Title</label>
                     <input type="text" class="form-control" id="title" name="title" aria-describedby="emailHelp">
                     <small id="emailHelp" class="form-text text-muted">Keep your title as short and crisp as
-                        possible</small>
+                    possible</small>
                 </div>
                 <div class="form-group">
                     <label for="desc">Ellaborate Your Concern</label>
@@ -110,6 +111,7 @@
             $id = $row['thread_id'];
             $title = $row['thread_title'];
             $desc = $row['thread_desc'];
+            $th_postedby = $row['thread_posted_by'];
             $thread_time = $row['thread_time'];
             $time = new DateTime("$thread_time");
             $time->format('jS \of F Y h:i:s A');
@@ -119,7 +121,7 @@
             <img src="img/userdefault.png" width="54px" class="mr-3" alt="...">
             <div class="media-body">' .
                 '<h5 class="mt-0"> <a class="text-dark" href="thread.php?threadid=' . $id . '">' . $title . ' </a></h5>
-                ' . $desc . ' </div>' . '<div class="font-weight-bold my-0"> Asked by:- <em>' . $username . ' (' . $time->format('jS F \, Y \a\t h:i A') . '</em>)</div>' .
+                ' . $desc . ' </div>' . '<div class="font-weight-bold my-0"> Asked by:- <em>' . $th_postedby . ' (' . $time->format('jS F \, Y \a\t h:i A') . '</em>)</div>' .
                 '</div>';
         }
         // echo var_dump($noResult);
