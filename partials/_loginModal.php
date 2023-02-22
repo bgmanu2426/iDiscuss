@@ -8,7 +8,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="/idiscuss/partials/_handleLogin.php" method="post">
+            <form action="/partials/_handleLogin.php" method="post">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="loginEmail">Username <strong style="color: red;">*</strong></label>
